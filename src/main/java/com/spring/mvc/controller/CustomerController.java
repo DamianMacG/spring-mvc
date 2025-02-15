@@ -30,6 +30,4 @@ public class CustomerController {
 
         return customerService.getCustomerById(Id);
     }
-
-
 }
