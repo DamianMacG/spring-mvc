@@ -105,8 +105,6 @@ public class BeerServiceImpl implements BeerService {
         existing.setUpc(beer.getUpc());
         existing.setQuantityOnHand(beer.getQuantityOnHand());
 
-        beerMap.put(existing.getId(), existing);
+//        beerMap.put(existing.getId(), existing);  - Don't actually need this
     }
-
-
 }
