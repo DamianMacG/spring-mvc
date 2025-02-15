@@ -20,7 +20,17 @@ public class BeerController {
 
     private final BeerService beerService;
 
+    @PutMapping("{beerId}")
+    public ResponseEntity updateById(@PathVariable("beerId") UUID beerId, @RequestBody Beer beer) {
+
+        beerService.updateBeerById(beerId, beer);
+
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
+
     @PostMapping
+//    @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity handlePost(@RequestBody Beer beer) {
         Beer savedBeer = beerService.saveNewBeer(beer);
 
@@ -30,6 +40,7 @@ public class BeerController {
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
 
+    //    @GetMapping
     @RequestMapping(method = RequestMethod.GET)
     public List<Beer> listBeers() {
         return beerService.listBeers();
