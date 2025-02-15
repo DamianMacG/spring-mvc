@@ -74,8 +74,23 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public void updateCustomerById(UUID customerId, Customer customer) {
         Customer existing = customerMap.get(customerId);
-        existing.setName(customer.getName());
-//        customerMap.put(existing.getId(), existing); - Don't actually need this
+
+        if (existing != null) {
+            // Ensure required fields NEVER change or become null
+            customer.setId(existing.getId()); // Keep ID unchanged
+            customer.setVersion(existing.getVersion()); // Keep version unchanged
+            customer.setCreatedDate(existing.getCreatedDate()); // Keep createdDate unchanged
+
+            // Update lastModifiedDate to NOW
+            customer.setLastModifiedDate(LocalDateTime.now());
+
+            // Allow updates for name (can be null)
+            customer.setName(customer.getName());
+
+            // Replace the old object in the map
+            customerMap.put(customerId, customer);
+        }
+
     }
 
     @Override
