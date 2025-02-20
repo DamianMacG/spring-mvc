@@ -16,8 +16,9 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(BeerController.class) // Sets up a test context for BeerController, including MockMvc for HTTP request testing
-class BeerControllerTest {
+@WebMvcTest(BeerController.class)
+// Sets up a test context for BeerController, including MockMvc for HTTP request testing
+public class BeerControllerTest {
 
     @Autowired
     MockMvc mockMvc; // MockMvc allows simulating HTTP requests to test the controller in isolation
