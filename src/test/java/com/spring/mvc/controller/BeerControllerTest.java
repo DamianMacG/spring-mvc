@@ -1,6 +1,8 @@
 package com.spring.mvc.controller;
 
+import com.spring.mvc.model.Beer;
 import com.spring.mvc.services.BeerService;
+import com.spring.mvc.services.BeerServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -10,28 +12,36 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-// @SpringBootTest
-@WebMvcTest(BeerController.class)
+@WebMvcTest(BeerController.class) // Sets up a test context for BeerController, including MockMvc for HTTP request testing
 class BeerControllerTest {
 
-//    @Autowired
-//    BeerController beerController;
-
     @Autowired
-    MockMvc mockMvc;
+    MockMvc mockMvc; // MockMvc allows simulating HTTP requests to test the controller in isolation
 
     @MockitoBean
-    BeerService beerService;
+    BeerService beerService; // Mocks the BeerService dependency to avoid real service calls
+
+    BeerServiceImpl beerServiceImpl = new BeerServiceImpl(); // Creates a real instance to retrieve test data
 
     @Test
     void getBeerById() throws Exception {
-        mockMvc.perform(get("/api/v1/beer/" + UUID.randomUUID())
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
 
-//        System.out.println(beerController.getBeerById(UUID.randomUUID()));
+        // Retrieve a sample beer object from the service's test data
+        Beer testBeer = beerServiceImpl.listBeers().get(0);
+
+        // Configure Mockito to return the test beer when getBeerById() is called with any UUID
+        given(beerService.getBeerById(any(UUID.class))).willReturn(testBeer);
+
+        // Perform a GET request to the API endpoint, simulating a client request
+        mockMvc.perform(get("/api/v1/beer/" + UUID.randomUUID()) // Simulates requesting a beer by ID
+                        .accept(MediaType.APPLICATION_JSON)) // Requests JSON response
+                .andExpect(status().isOk()) // Verifies that the response status is 200 OK
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON)); // Ensures response content type is JSON
     }
 }
