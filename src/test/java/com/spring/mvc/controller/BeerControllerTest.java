@@ -10,13 +10,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.UUID;
-
-import static org.mockito.ArgumentMatchers.any;
+import static org.hamcrest.core.Is.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(BeerController.class) // Sets up a test context for BeerController, including MockMvc for HTTP request testing
 class BeerControllerTest {
@@ -36,12 +33,14 @@ class BeerControllerTest {
         Beer testBeer = beerServiceImpl.listBeers().get(0);
 
         // Configure Mockito to return the test beer when getBeerById() is called with any UUID
-        given(beerService.getBeerById(any(UUID.class))).willReturn(testBeer);
+        given(beerService.getBeerById(testBeer.getId())).willReturn(testBeer);
 
         // Perform a GET request to the API endpoint, simulating a client request
-        mockMvc.perform(get("/api/v1/beer/" + UUID.randomUUID()) // Simulates requesting a beer by ID
+        mockMvc.perform(get("/api/v1/beer/" + testBeer.getId()) // Simulates requesting a beer by ID
                         .accept(MediaType.APPLICATION_JSON)) // Requests JSON response
                 .andExpect(status().isOk()) // Verifies that the response status is 200 OK
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON)); // Ensures response content type is JSON
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON)) // Ensures response content type is JSON
+                .andExpect(jsonPath("$.id", is(testBeer.getId().toString()))) // Verify that the JSON response contains the correct beer ID
+                .andExpect(jsonPath("$.beerName", is(testBeer.getBeerName()))); // Verify that the JSON response contains the correct beer name
     }
 }
