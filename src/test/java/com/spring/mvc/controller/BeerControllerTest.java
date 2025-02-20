@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import static org.hamcrest.core.Is.is;
 import static org.mockito.BDDMockito.given;
@@ -25,6 +26,25 @@ class BeerControllerTest {
     BeerService beerService; // Mocks the BeerService dependency to avoid real service calls
 
     BeerServiceImpl beerServiceImpl = new BeerServiceImpl(); // Creates a real instance to retrieve test data
+
+    @Test
+    void testListBeers() throws Exception {
+
+        // Mock the beerService to return test data
+        given(beerService.listBeers()).willReturn(beerServiceImpl.listBeers());
+
+        // Perform the request and capture the result if you want to log it
+        MvcResult result = mockMvc.perform(get("/api/v1/beer")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()", is(3)))
+                .andReturn(); // Capture the result
+
+        // Print the JSON response to the console
+        System.out.println("Response JSON: " + result.getResponse().getContentAsString());
+    }
+
 
     @Test
     void getBeerById() throws Exception {
