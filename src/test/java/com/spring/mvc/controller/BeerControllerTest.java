@@ -7,6 +7,7 @@ import com.spring.mvc.services.BeerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -14,6 +15,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,21 +43,54 @@ public class BeerControllerTest {
 
     BeerServiceImpl beerServiceImpl; // Creates a real instance to retrieve test data
 
+    @Captor
+    ArgumentCaptor<UUID> uuidArgumentCaptor;
+
+    @Captor
+    ArgumentCaptor<Beer> beerArgumentCaptor;
+
     @BeforeEach
     void setUp() {
         beerServiceImpl = new BeerServiceImpl();
     }
 
     @Test
+    void testPatchBeer() throws Exception {
+        // Retrieve an existing beer from the service implementation
+        //    - Calls `listBeers()` to get all beers stored in the in-memory `beerServiceImpl`.
+        //    - `.getFirst()` retrieves the first beer in the list.
+        //    - This ensures that we are working with a **real, valid beer object** that has an existing ID.
+        Beer beer = beerServiceImpl.listBeers().getFirst();
+
+        //    Create a `Map<String, Object>` to represent the JSON request body for the PATCH request
+        //    - A HashMap is used because we want a flexible structure to hold key-value pairs.
+        //    - `beerMap.put("beerName", "New Name")` simulates updating **only** the beer’s name.
+        //    - This mimics what a real client would send in a PATCH request, where only certain fields are modified.
+        Map<String, Object> beerMap = new HashMap<>();
+        beerMap.put("beerName", "New Name"); // This key must match the `Beer` model’s field name.
+
+        mockMvc.perform(patch("/api/v1/beer/" + beer.getId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beerMap)))
+                .andExpect(status().isNoContent());
+
+        verify(beerService).patchBeerById(uuidArgumentCaptor.capture(), beerArgumentCaptor.capture());
+
+        assertThat(beer.getId()).isEqualTo(uuidArgumentCaptor.getValue());
+        assertThat(beerMap.get("beerName")).isEqualTo(beerArgumentCaptor.getValue().getBeerName());
+    }
+
+    @Test
     void testDeleteBeer() throws Exception {
-        Beer beer = beerServiceImpl.listBeers().get(0);
+        Beer beer = beerServiceImpl.listBeers().getFirst();
 
         mockMvc.perform(delete("/api/v1/beer/" + beer.getId())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
         // Create an ArgumentCaptor to capture the UUID argument passed to deleteBeerById()
-        ArgumentCaptor<UUID> uuidArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
+        // ArgumentCaptor<UUID> uuidArgumentCaptor = ArgumentCaptor.forClass(UUID.class); - replaced with @Captor above
 
         // Verify that beerService.deleteBeerById() was called exactly once and actually captures the UUID used, stores it in the instance of uuidArgumentCaptor
         verify(beerService).deleteBeerById(uuidArgumentCaptor.capture());
