@@ -6,6 +6,7 @@ import com.spring.mvc.services.BeerService;
 import com.spring.mvc.services.BeerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -15,6 +16,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -42,6 +44,25 @@ public class BeerControllerTest {
     void setUp() {
         beerServiceImpl = new BeerServiceImpl();
     }
+
+    @Test
+    void testDeleteBeer() throws Exception {
+        Beer beer = beerServiceImpl.listBeers().get(0);
+
+        mockMvc.perform(delete("/api/v1/beer/" + beer.getId())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        // Create an ArgumentCaptor to capture the UUID argument passed to deleteBeerById()
+        ArgumentCaptor<UUID> uuidArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
+
+        // Verify that beerService.deleteBeerById() was called exactly once and actually captures the UUID used, stores it in the instance of uuidArgumentCaptor
+        verify(beerService).deleteBeerById(uuidArgumentCaptor.capture());
+
+        // Assert that the captured UUID matches the ID of the beer we wanted to delete
+        assertThat(beer.getId()).isEqualTo(uuidArgumentCaptor.getValue());
+    }
+
 
     @Test
     void testUpdateBeer() throws Exception {
