@@ -1,5 +1,7 @@
 package com.spring.mvc.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spring.mvc.model.Beer;
 import com.spring.mvc.services.BeerService;
 import com.spring.mvc.services.BeerServiceImpl;
@@ -23,13 +25,26 @@ public class BeerControllerTest {
     @Autowired
     MockMvc mockMvc; // MockMvc allows simulating HTTP requests to test the controller in isolation
 
+    // In tests, ObjectMapper is often used to convert objects to JSON strings before sending API requests, and to parse JSON responses into Java objects for validation.
+    @Autowired
+    ObjectMapper objectMapper; // Used to serialise and deserialise JSON data in tests
+
     @MockitoBean
     BeerService beerService; // Mocks the BeerService dependency to avoid real service calls
 
     BeerServiceImpl beerServiceImpl = new BeerServiceImpl(); // Creates a real instance to retrieve test data
 
+
     @Test
-    void testListBeers() throws Exception {
+    void testCreateNewBeer() throws JsonProcessingException {
+
+        Beer beer = beerServiceImpl.listBeers().getFirst();
+
+        System.out.println(objectMapper.writeValueAsString(beer));
+    }
+
+    @Test
+    void getBeers() throws Exception {
 
         // Mock the beerService to return test data
         given(beerService.listBeers()).willReturn(beerServiceImpl.listBeers());
