@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -198,13 +199,12 @@ public class BeerControllerTest {
 
     @Test
     void getBeerByIdNotFound() throws Exception {
-        Beer testBeer = beerServiceImpl.listBeers().get(0);
+        UUID randomId = UUID.randomUUID(); // Use a UUID that does not exist
 
-        given(beerService.getBeerById(any(UUID.class))).willThrow(NotFoundException.class);
+        given(beerService.getBeerById(any(UUID.class))).willReturn(Optional.empty());
 
-        mockMvc.perform((get("/api/v1/beer/" + testBeer.getId(), UUID.randomUUID())))
+        mockMvc.perform(get("/api/v1/beer/" + randomId))
                 .andExpect(status().isNotFound());
-
     }
 
 
@@ -215,7 +215,7 @@ public class BeerControllerTest {
         Beer testBeer = beerServiceImpl.listBeers().get(0);
 
         // Configure Mockito to return the test beer when getBeerById() is called with any UUID
-        given(beerService.getBeerById(testBeer.getId())).willReturn(testBeer);
+        given(beerService.getBeerById(testBeer.getId())).willReturn(Optional.of(testBeer));
 
         // Perform a GET request to the API endpoint, simulating a client request
         mockMvc.perform(get("/api/v1/beer/" + testBeer.getId()) // Simulates requesting a beer by ID

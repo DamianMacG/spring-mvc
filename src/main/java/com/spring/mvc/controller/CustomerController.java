@@ -60,6 +60,6 @@ public class CustomerController {
     @RequestMapping(value = "{customerId}", method = RequestMethod.GET)
     public Customer getCustomerById(@PathVariable("customerId") UUID Id) {
 
-        return customerService.getCustomerById(Id);
+        return customerService.getCustomerById(Id).orElseThrow(NotFoundException::new);
     }
 }
