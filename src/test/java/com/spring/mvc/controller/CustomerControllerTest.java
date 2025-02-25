@@ -126,7 +126,7 @@ public class CustomerControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()", is(3)))
                 .andReturn(); // Capture the result
-        System.out.println("Response JSON: " + result.getResponse().getContentAsString());
+//        System.out.println("Response JSON: " + result.getResponse().getContentAsString());
     }
 
     @Test
