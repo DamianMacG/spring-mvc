@@ -1,7 +1,7 @@
 package com.spring.mvc.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.spring.mvc.model.Beer;
+import com.spring.mvc.model.BeerDTO;
 import com.spring.mvc.services.BeerService;
 import com.spring.mvc.services.BeerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,7 +48,7 @@ public class BeerControllerTest {
     ArgumentCaptor<UUID> uuidArgumentCaptor;
 
     @Captor
-    ArgumentCaptor<Beer> beerArgumentCaptor;
+    ArgumentCaptor<BeerDTO> beerArgumentCaptor;
 
     @BeforeEach
     void setUp() {
@@ -61,7 +61,7 @@ public class BeerControllerTest {
         //    - Calls `listBeers()` to get all beers stored in the in-memory `beerServiceImpl`.
         //    - `.getFirst()` retrieves the first beer in the list.
         //    - This ensures that we are working with a **real, valid beer object** that has an existing ID.
-        Beer beer = beerServiceImpl.listBeers().getFirst();
+        BeerDTO beer = beerServiceImpl.listBeers().getFirst();
 
         //    Create a `Map<String, Object>` to represent the JSON request body for the PATCH request
         //    - A HashMap is used because we want a flexible structure to hold key-value pairs.
@@ -84,7 +84,7 @@ public class BeerControllerTest {
 
     @Test
     void testDeleteBeer() throws Exception {
-        Beer beer = beerServiceImpl.listBeers().getFirst();
+        BeerDTO beer = beerServiceImpl.listBeers().getFirst();
 
         mockMvc.perform(delete("/api/v1/beer/" + beer.getId())
                         .accept(MediaType.APPLICATION_JSON))
@@ -103,7 +103,7 @@ public class BeerControllerTest {
 
     @Test
     void testUpdateBeer() throws Exception {
-        Beer beer = beerServiceImpl.listBeers().get(0);
+        BeerDTO beer = beerServiceImpl.listBeers().get(0);
 
         mockMvc.perform(put("/api/v1/beer/" + beer.getId())
                         .accept(MediaType.APPLICATION_JSON)
@@ -112,19 +112,19 @@ public class BeerControllerTest {
                 .andExpect(status().isNoContent()); // Expecting HTTP 204 No Content - matching the controller's response
 
         // Verify that beerService.updateBeerById() was called exactly once with any UUID and any Beer object
-        verify(beerService).updateBeerById(any(UUID.class), any(Beer.class));
+        verify(beerService).updateBeerById(any(UUID.class), any(BeerDTO.class));
 
     }
 
     @Test
     void testCreateNewBeer() throws Exception {
         // 1. Mimicking a new beer that hasn’t been assigned an ID or version yet
-        Beer beer = beerServiceImpl.listBeers().getFirst();
+        BeerDTO beer = beerServiceImpl.listBeers().getFirst();
         beer.setVersion(null);
         beer.setId(null);
 
         // 2. Mocking service behavior: When saveNewBeer() is called with ANY beer, return the LAST beer in the list
-        given(beerService.saveNewBeer(any(Beer.class))).willReturn(beerServiceImpl.listBeers().getLast());
+        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers().getLast());
 
         // 3. Sending a POST request with the beer object as JSON
         mockMvc.perform(post("/api/v1/beer")
@@ -212,7 +212,7 @@ public class BeerControllerTest {
     void getBeerById() throws Exception {
 
         // Retrieve a sample beer object from the service's test data
-        Beer testBeer = beerServiceImpl.listBeers().get(0);
+        BeerDTO testBeer = beerServiceImpl.listBeers().get(0);
 
         // Configure Mockito to return the test beer when getBeerById() is called with any UUID
         given(beerService.getBeerById(testBeer.getId())).willReturn(Optional.of(testBeer));

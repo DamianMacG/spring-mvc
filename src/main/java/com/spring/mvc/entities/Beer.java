@@ -1,21 +1,26 @@
-package com.spring.mvc.model;
+package com.spring.mvc.entities;
 
-import lombok.Builder;
-import lombok.Data;
+import com.spring.mvc.model.Beerstyle;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Version;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-
 @Builder
-@Data
+@Getter // Use @Getter and @Setter annotations as you shouldn't use @Data in Entities
+@Setter //
+@Entity
 @AllArgsConstructor
 @NoArgsConstructor
 public class Beer {
+    @Id // Needed in Entities
     private UUID id;
+
+    @Version // Needed in Entities if using version
     private Integer version;
     private String beerName;
     private Beerstyle beerStyle;
@@ -25,4 +30,3 @@ public class Beer {
     private LocalDateTime createdDate;
     private LocalDateTime updateDate;
 }
-
