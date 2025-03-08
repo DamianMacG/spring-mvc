@@ -7,6 +7,8 @@ import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.Rollback;
 
 import java.util.List;
@@ -22,6 +24,36 @@ class BeerControllerIT {
 
     @Autowired
     BeerRepository beerRepository;
+
+    @Rollback
+    @Transactional
+    @Test
+    void saveNewBeerTest() {
+        // Create a new BeerDTO with minimal data (only beerName)
+        BeerDTO beerDTO = BeerDTO.builder()
+                .beerName("New Beer")
+                .build();
+
+        // Call the controller's POST handler to save the new beer
+        ResponseEntity responseEntity = beerController.handlePost(beerDTO);
+
+        // Assert that the response status is 201 Created
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(201));
+
+        // Assert that the response includes a "Location" header with the URI of the new resource
+        assertThat(responseEntity.getHeaders().getLocation()).isNotNull();
+
+        // Extract the UUID from the Location header path
+        String[] locationUUID = responseEntity.getHeaders().getLocation().getPath().split("/");
+        UUID savedUUID = UUID.fromString(locationUUID[4]);
+
+        // Retrieve the saved Beer entity from the repository
+        Beer beer = beerRepository.findById(savedUUID).get();
+
+        // Assert that the Beer entity was successfully saved
+        assertThat(beer).isNotNull();
+    }
+
 
     @Test
     void testBeerIdNotFound() {
