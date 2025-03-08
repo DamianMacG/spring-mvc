@@ -16,6 +16,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
+@Rollback
+@Transactional
 class CustomerControllerIT {
     @Autowired
     CustomerController customerController;
@@ -45,8 +47,6 @@ class CustomerControllerIT {
     }
 
 
-    @Rollback
-    @Transactional
     @Test
     void testEmptyList() {
         customerRepository.deleteAll();

@@ -1,5 +1,5 @@
 package com.spring.mvc.model;
 
-public enum Beerstyle {
+public enum BeerStyle {
     LAGER, PILSNER, STOUT, GOSE, PORTER, ALE, WHEAT, IPA, PALE_ALE, SAISON
 }

@@ -14,7 +14,8 @@ public interface BeerService {
 
     BeerDTO saveNewBeer(BeerDTO beer);
 
-    void updateBeerById(UUID beerId, BeerDTO beer);
+    // Updates an existing Beer and returns the updated DTO if found, otherwise returns Optional.empty()
+    Optional<BeerDTO> updateBeerById(UUID beerId, BeerDTO beer);
 
     void deleteBeerById(UUID beerId);
 

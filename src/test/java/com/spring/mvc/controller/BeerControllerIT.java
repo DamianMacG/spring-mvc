@@ -29,22 +29,43 @@ class BeerControllerIT {
     @Autowired
     BeerMapper beerMapper;
 
+    @Test
+    void testUpdateNotFound() {
+        assertThrows(NotFoundException.class, () -> {
+            beerController.updateById(UUID.randomUUID(), BeerDTO.builder().build());
+        });
+    }
+
 
     @Test
     void updateExistingBeer() {
+        // Retrieve the first Beer entity from the database
         Beer beer = beerRepository.findAll().getFirst();
+
+        // Convert the Beer entity to a BeerDTO for updating
         BeerDTO beerDTO = beerMapper.beerToBeerDto(beer);
-        beerDTO.setId(null);
-        beerDTO.setVersion(null);
+
+        // Clear ID and version to prevent conflicts during update
+//        beerDTO.setId(null);
+//        beerDTO.setVersion(null);
+
+        // Modify the beer name for testing the update
         final String beerName = "UPDATED";
         beerDTO.setBeerName(beerName);
 
+        // Send an update request to the controller
         ResponseEntity responseEntity = beerController.updateById(beer.getId(), beerDTO);
+
+        // Assert that the response status is 201 Created (indicating successful update)
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(204));
 
+        // Retrieve the updated Beer entity from the database
         Beer updatedBeer = beerRepository.findById(beer.getId()).get();
+
+        // Assert that the beer name was successfully updated in the database
         assertThat(updatedBeer.getBeerName()).isEqualTo(beerName);
     }
+
 
     @Rollback
     @Transactional

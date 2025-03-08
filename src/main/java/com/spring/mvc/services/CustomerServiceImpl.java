@@ -14,7 +14,34 @@ public class CustomerServiceImpl implements CustomerService {
 
     public CustomerServiceImpl() {
         this.customerMap = new HashMap<>();
+        CustomerDTO customer1 = CustomerDTO.builder()
+                .id(UUID.randomUUID())
+                .name("Customer 1")
+                .version(1)
+                .createdDate(LocalDateTime.now())
+                .lastModifiedDate(LocalDateTime.now())
+                .build();
 
+        CustomerDTO customer2 = CustomerDTO.builder()
+                .id(UUID.randomUUID())
+                .name("Customer 2")
+                .version(1)
+                .createdDate(LocalDateTime.now())
+                .lastModifiedDate(LocalDateTime.now())
+                .build();
+
+        CustomerDTO customer3 = CustomerDTO.builder()
+                .id(UUID.randomUUID())
+                .name("Customer 3")
+                .version(1)
+                .createdDate(LocalDateTime.now())
+                .lastModifiedDate(LocalDateTime.now())
+                .build();
+
+        customerMap = new HashMap<>();
+        customerMap.put(customer1.getId(), customer1);
+        customerMap.put(customer2.getId(), customer2);
+        customerMap.put(customer3.getId(), customer3);
 
     }
 

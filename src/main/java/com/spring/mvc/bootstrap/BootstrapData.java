@@ -2,7 +2,7 @@ package com.spring.mvc.bootstrap;
 
 import com.spring.mvc.entities.Beer;
 import com.spring.mvc.entities.Customer;
-import com.spring.mvc.model.Beerstyle;
+import com.spring.mvc.model.BeerStyle;
 import com.spring.mvc.repositories.BeerRepository;
 import com.spring.mvc.repositories.CustomerRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class BootstrapData implements CommandLineRunner { // Implements CommandL
 
             Beer beer1 = Beer.builder()
                     .beerName("Galaxy Cat")
-                    .beerStyle(Beerstyle.PALE_ALE)
+                    .beerStyle(BeerStyle.PALE_ALE)
                     .upc("12356")
                     .price(new BigDecimal("12.99"))
                     .quantityOnHand(122)
@@ -47,7 +47,7 @@ public class BootstrapData implements CommandLineRunner { // Implements CommandL
 
             Beer beer2 = Beer.builder()
                     .beerName("Crank")
-                    .beerStyle(Beerstyle.PALE_ALE)
+                    .beerStyle(BeerStyle.PALE_ALE)
                     .upc("12356222")
                     .price(new BigDecimal("11.99"))
                     .quantityOnHand(392)
@@ -57,7 +57,7 @@ public class BootstrapData implements CommandLineRunner { // Implements CommandL
 
             Beer beer3 = Beer.builder()
                     .beerName("Sunshine City")
-                    .beerStyle(Beerstyle.IPA)
+                    .beerStyle(BeerStyle.IPA)
                     .upc("12356")
                     .price(new BigDecimal("13.99"))
                     .quantityOnHand(144)

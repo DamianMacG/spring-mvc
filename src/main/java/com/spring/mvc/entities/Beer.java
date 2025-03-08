@@ -1,6 +1,6 @@
 package com.spring.mvc.entities;
 
-import com.spring.mvc.model.Beerstyle;
+import com.spring.mvc.model.BeerStyle;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
@@ -26,7 +26,7 @@ public class Beer {
     @Version // Needed in Entities if using version
     private Integer version;
     private String beerName;
-    private Beerstyle beerStyle;
+    private BeerStyle beerStyle;
     private String upc;
     private Integer quantityOnHand;
     private BigDecimal price;
