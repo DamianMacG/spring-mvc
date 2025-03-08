@@ -19,6 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
+@Rollback
+@Transactional
 class BeerControllerIT {
     @Autowired
     BeerController beerController;
@@ -28,6 +30,25 @@ class BeerControllerIT {
 
     @Autowired
     BeerMapper beerMapper;
+
+    @Test
+    void testDeleteNotFound() {
+        assertThrows(NotFoundException.class, () -> {
+            beerController.deleteById(UUID.randomUUID());
+        });
+    }
+
+    @Test
+    void deleteByIdFound() {
+        Beer beer = beerRepository.findAll().getFirst();
+
+        ResponseEntity responseEntity = beerController.deleteById(beer.getId());
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(204));
+
+        assertThat(beerRepository.findById(beer.getId()).isEmpty());
+
+    }
 
     @Test
     void testUpdateNotFound() {
@@ -67,8 +88,6 @@ class BeerControllerIT {
     }
 
 
-    @Rollback
-    @Transactional
     @Test
     void saveNewBeerTest() {
         // Create a new BeerDTO with minimal data (only beerName)

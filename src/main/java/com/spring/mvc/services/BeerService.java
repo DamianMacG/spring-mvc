@@ -17,7 +17,7 @@ public interface BeerService {
     // Updates an existing Beer and returns the updated DTO if found, otherwise returns Optional.empty()
     Optional<BeerDTO> updateBeerById(UUID beerId, BeerDTO beer);
 
-    void deleteBeerById(UUID beerId);
+    Boolean deleteBeerById(UUID beerId);
 
-    void patchBeerById(UUID beerId, BeerDTO beer);
+    Optional<BeerDTO> patchBeerById(UUID beerId, BeerDTO beer);
 }
