@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spring.mvc.entities.Beer;
 import com.spring.mvc.mappers.BeerMapper;
 import com.spring.mvc.model.BeerDTO;
+import com.spring.mvc.model.BeerStyle;
 import com.spring.mvc.repositories.BeerRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,22 +16,25 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @Rollback
-@Transactional
 class BeerControllerIT {
     @Autowired
     BeerController beerController;
@@ -59,17 +63,24 @@ class BeerControllerIT {
 
     @Test
     void testPatchBeerBadName() throws Exception {
-        Beer beer = beerRepository.findAll().get(0);
+        Beer beer = beerRepository.findAll().getFirst();
 
         Map<String, Object> beerMap = new HashMap<>();
         beerMap.put("beerName", "New Name 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890");
+        beerMap.put("price", new BigDecimal(10.00));
+        beerMap.put("upc", "9000");
+        beerMap.put("beerStyle", BeerStyle.PALE_ALE);
 
-        mockMvc.perform(patch("/api/v1/beer/" + beer.getId())
-                        .contentType(MediaType.APPLICATION_JSON)
+        MvcResult result = mockMvc.perform(patch("/api/v1/beer/" + beer.getId())
                         .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beerMap)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.length()", is(1)))
+                .andReturn();
 
+
+        System.out.println(result.getResponse().getContentAsString());
     }
 
     @Test

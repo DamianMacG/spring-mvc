@@ -55,6 +55,7 @@ public class BeerControllerTest {
         beerServiceImpl = new BeerServiceImpl();
     }
 
+
     @Test
     void testPatchBeer() throws Exception {
         // Retrieve an existing beer from the service implementation
