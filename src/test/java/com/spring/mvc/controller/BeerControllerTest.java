@@ -85,7 +85,7 @@ public class BeerControllerTest {
     @Test
     void testDeleteBeer() throws Exception {
         BeerDTO beer = beerServiceImpl.listBeers().getFirst();
-        
+
         given(beerService.deleteBeerById(any())).willReturn(true);
 
         mockMvc.perform(delete("/api/v1/beer/" + beer.getId())
@@ -118,6 +118,19 @@ public class BeerControllerTest {
         // Verify that beerService.updateBeerById() was called exactly once with any UUID and any Beer object
         verify(beerService).updateBeerById(any(UUID.class), any(BeerDTO.class));
 
+    }
+
+    @Test
+    void testCreateBeerNullBeerName() throws Exception {
+        BeerDTO beerDTO = BeerDTO.builder().build();
+
+        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers().getLast());
+
+        mockMvc.perform(post("/api/v1/beer")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beerDTO)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -229,4 +242,6 @@ public class BeerControllerTest {
                 .andExpect(jsonPath("$.id", is(testBeer.getId().toString()))) // Verify that the JSON response contains the correct beer ID
                 .andExpect(jsonPath("$.beerName", is(testBeer.getBeerName()))); // Verify that the JSON response contains the correct beer name
     }
+
+
 }
