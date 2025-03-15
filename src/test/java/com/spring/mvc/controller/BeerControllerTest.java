@@ -126,11 +126,14 @@ public class BeerControllerTest {
 
         given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers().getLast());
 
-        mockMvc.perform(post("/api/v1/beer")
+        MvcResult mvcResult = mockMvc.perform(post("/api/v1/beer")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beerDTO)))
-                .andExpect(status().isBadRequest());
+                .andExpect(jsonPath("$.length()", is(2)))
+                .andExpect(status().isBadRequest()).andReturn();
+
+        System.out.println(mvcResult.getResponse().getContentAsString());
     }
 
     @Test
