@@ -121,6 +121,27 @@ public class BeerControllerTest {
     }
 
     @Test
+    void testNullUpdateBeer() throws Exception {
+        BeerDTO beer = beerServiceImpl.listBeers().getFirst();
+        beer.setBeerName("");
+
+        given(beerService.updateBeerById(any(), any())).willReturn(Optional.of(beer));
+
+        MvcResult mvcResult = mockMvc.perform(put("/api/v1/beer/" + beer.getId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beer)))
+                .andExpect(jsonPath("$.length()", is(1)))
+                .andExpect(status().isBadRequest()).andReturn();
+
+        System.out.println(mvcResult.getResponse().getContentAsString());
+
+        // Verify that beerService.updateBeerById() was called exactly once with any UUID and any Beer object
+//        verify(beerService).updateBeerById(any(UUID.class), any(BeerDTO.class));
+
+    }
+
+    @Test
     void testCreateBeerNullBeerName() throws Exception {
         BeerDTO beerDTO = BeerDTO.builder().build();
 
@@ -130,7 +151,7 @@ public class BeerControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beerDTO)))
-                .andExpect(jsonPath("$.length()", is(2)))
+                .andExpect(jsonPath("$.length()", is(6)))
                 .andExpect(status().isBadRequest()).andReturn();
 
         System.out.println(mvcResult.getResponse().getContentAsString());
